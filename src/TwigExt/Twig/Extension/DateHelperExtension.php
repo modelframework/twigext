@@ -6,7 +6,7 @@ namespace TwigExt\Twig\Extension;
  *
  *
  */
-class ArrayHelperExtension extends \Twig_Extension
+class DateHelperExtension extends \Twig_Extension
 {
     /**
      */
@@ -19,7 +19,7 @@ class ArrayHelperExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'zfc_arrayHelper';
+        return 'zfc_dateHelper';
     }
 
     /**
@@ -29,14 +29,8 @@ class ArrayHelperExtension extends \Twig_Extension
     {
         $filters = array();
 
-        $withoutMethod              = new \Twig_Filter_Method( $this, 'without' );
-        $filters[ 'without' ] = $withoutMethod;
-
-        $replaceKeyMethod              = new \Twig_Filter_Method( $this, 'replaceKey' );
-        $filters[ 'replaceKey' ] = $replaceKeyMethod;
-
-        $removeKeyMethod              = new \Twig_Filter_Method( $this, 'removeKey' );
-        $filters[ 'removeKey' ] = $removeKeyMethod;
+        $dateFormatMethod              = new \Twig_Filter_Method($this, 'dateFormat');
+        $filters[ 'dateFormat' ] = $dateFormatMethod;
 
         return $filters;
     }
@@ -47,55 +41,23 @@ class ArrayHelperExtension extends \Twig_Extension
      *
      * @return array Remaining entries of {@code $entries} after removing the entries of {@code $without}.
      */
-    public function without( $entries, $without )
+    public function dateFormat($entries, $without)
     {
-        if ( !is_array( $without ) )
-        {
-            $without = array( $without );
-        }
+        prn($entries, $without);
 
-        return array_diff( $this->convertToArray( $entries ), $without );
+        return 'DateFormat';
     }
 
-    /**
-     * @param mixed $entries All entries.
-     * @param mixed $key     Key of the entry to be merged.
-     * @param mixed $value   Value of the entry to be merged.
-     *
-     * @return array Entries of {@code $entries} merged with an entry built from {@code $key} and {@code $value}.
-     */
-    public function replaceKey( $entries, $key, $value )
+    protected function convertToArray($source)
     {
-        return array_merge( $this->convertToArray( $entries ), array( $key => $value ) );
-    }
-
-    /**
-     * @param mixed $entries All entries.
-     * @param mixed $key     Key of the entry to be removed.
-     *
-     * @return array Entries of {@code $entries} without the entry with key {@code $key}.
-     */
-    public function removeKey( $entries, $key )
-    {
-        $result = $this->convertToArray( $entries );
-        $minus = array_flip($this->convertToArray( $key ));
-        $result = array_diff_key($result, $minus);
-        return $result;
-    }
-
-    protected function convertToArray( $source )
-    {
-        if ( is_array( $source ) )
-        {
+        if (is_array($source)) {
             return $source;
         }
 
-        if ( $source instanceof \Traversable )
-        {
-            return iterator_to_array( $source, true );
+        if ($source instanceof \Traversable) {
+            return iterator_to_array($source, true);
         }
 
-        throw new \InvalidArgumentException( 'The filter can be applied to arrays only.' );
+        throw new \InvalidArgumentException('The filter can be applied to arrays only.');
     }
-
 }
