@@ -43,7 +43,7 @@ class DateHelperExtension extends \Twig_Extension
      */
     public function dateFormat($entries, $without)
     {
-        prn($entries, $without);
+//        prn($entries, $without);
 
         return 'DateFormat';
     }
